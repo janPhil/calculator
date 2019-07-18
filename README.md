@@ -34,3 +34,14 @@ Afterwards you can run the client like:
 ```./calculator_client <number><operator><number>``` on Unix  
 or  
 ```calculator_client.exe <number><operator><number>``` on Windows
+
+### More information
+
+For more information about gRPC please visit:  
+
+[gRPC.io](https://grpc.io/)  
+
+For more information about Protocol Buffers please visit:  
+
+[Protocol Buffers - Google Developers Guide](https://developers.google.com/protocol-buffers/)  
+
