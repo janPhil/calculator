@@ -13,9 +13,11 @@ The calculator server implements a method Calculate add, substract, multiply or 
 
 ### System requirements
 
-To get information about system requirements, please visit the [Goland MinimumRequirements Wiki Page](https://github.com/golang/go/wiki/MinimumRequirements)
+To get information about system requirements, please visit the [Golang MinimumRequirements Wiki Page](https://github.com/golang/go/wiki/MinimumRequirements)
 
 ### Installation
+
+To install Golang, please follow the instructions on the [Golang Getting Started Page](https://golang.org/doc/install)
 
 This project supports Go modules. Therefor it is not necessary anymore to "go get" all dependencies.
 You can run the program either by running the two .go files for server and client:
