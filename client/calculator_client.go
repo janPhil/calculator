@@ -1,3 +1,8 @@
+/*
+Implementation of the calculator client.
+Calculator_client listens by default on port 8888.
+WARNING the gRPC dial is Insecure (dont use in production)
+*/
 package main
 
 import (
@@ -13,6 +18,8 @@ import (
 
 func main() {
 
+	// The command-line Arguments are checked. If it is less then 2 that means that the user didnt provide a term for calculation.
+	// If it is more then two it might be that the user tried to use whitespaces which is not supported.
 	if len(os.Args) < 2 {
 		fmt.Println("Missing statement for calculation: <number><operation><number>")
 		os.Exit(1)
@@ -23,7 +30,6 @@ func main() {
 	}
 
 	input := os.Args[1]
-	fmt.Println(input)
 	inputTerm := parseInput(input)
 
 	conn, err := grpc.Dial(":8888", grpc.WithInsecure())
@@ -41,11 +47,13 @@ func main() {
 
 }
 
+// parseInput takes the provided input and tries to parse it into a term which can be used for a calculation.
+// The operator and both sides are put into a *calculator.Term.
+// If a conversion is not possible a message is logged, otherwise the term is returned.
 func parseInput(input string) *calculator.Term {
 
 	var operator string
 	var indexOperator int
-
 	var parts [3]string
 
 	for pos, char := range input {

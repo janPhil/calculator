@@ -1,3 +1,10 @@
+/*
+Implementation of the calculator server.
+Calculator_server runs by default on port 8888.
+It provides a method Calculate to calculate two
+numbers. Supported operations are Addition, Subtraction,
+Multiplication and Division.
+*/
 package main
 
 import (
@@ -11,6 +18,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// The Server is communicating over gRPC Calls and provides a method to calculate two numbers.
 func main() {
 
 	srv := grpc.NewServer()
@@ -22,14 +30,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not listen to port 8888")
 	}
+	fmt.Println("Server started")
 	log.Fatal(srv.Serve(l))
 
 }
 
 type calculatorServiceServer struct{}
 
-// Calculate function takes an argument of typ *calculator.Term.
-// It computes the result of the operation and sends back a *calculator.Result
+// Calculate takes in an argument of typ *calculator.Term.
+// It computes the result of the operation and sends back a *calculator.Result.
+// Should the operation be unsupported an error is thrown, also if there is an
+// attempt to do a division through zero
 func (c calculatorServiceServer) Calculate(ctx context.Context, term *calculator.Term) (*calculator.Result, error) {
 
 	left := term.GetLeft()
