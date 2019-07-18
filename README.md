@@ -30,5 +30,7 @@ Or you build executable files by running:
 1. ```$ go build server/calculator_server.go```
 2. ```$ go build client/calculator_client.go```
 
-Afterwards you can run the client like ```./calculator_client <number><operator><number>``` on Unix
-or ```calculator_client.exe <number><operator><number>```
+Afterwards you can run the client like:
+```./calculator_client <number><operator><number>``` on Unix
+or
+```calculator_client.exe <number><operator><number>``` on Windows
