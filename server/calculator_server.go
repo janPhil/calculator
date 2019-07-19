@@ -54,24 +54,21 @@ func (c calculatorServiceServer) Calculate(ctx context.Context, term *calculator
 
 	fmt.Printf("Received request for %v %v %v\n", left, operator, right)
 
-	response := calculator.Result{}
+	var response calculator.Result
 
 	switch operator {
 	case "+":
 		response.Result = left + right
-		return &response, nil
 	case "-":
 		response.Result = left - right
-		return &response, nil
 	case "*":
 		response.Result = left * right
-		return &response, nil
 	case "/":
 		response.Result = left / right
-		return &response, nil
 	default:
-		err := errors.New("Unsupported operation")
-		return nil, err
+		return nil, errors.New("Unsupported operation")
 	}
+
+	return &response, nil
 
 }

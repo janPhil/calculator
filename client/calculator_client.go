@@ -56,8 +56,10 @@ func parseInput(input string) *calculator.Term {
 	var indexOperator int
 	var parts [3]string
 
+	supportedOperations := []rune{'+', '-', '*', '/'}
+
 	for pos, char := range input {
-		if char == '+' || char == '-' || char == '*' || char == '/' {
+		if isSupportedOperation(char, &supportedOperations) {
 			if pos == 0 {
 				continue
 			}
@@ -66,6 +68,10 @@ func parseInput(input string) *calculator.Term {
 			break
 		}
 	}
+	if operator == "" {
+		log.Fatal("Operation not supported")
+	}
+
 	parts[0] = input[:indexOperator]
 	left, errLeft := strconv.ParseFloat(parts[0], 32)
 	if errLeft != nil {
@@ -78,4 +84,15 @@ func parseInput(input string) *calculator.Term {
 		log.Fatal("cannot convert r: ", parts[2])
 	}
 	return &calculator.Term{Left: float32(left), Right: float32(right), Operator: operator}
+}
+
+// isSupportedOperations receives a rune and the reference to a slice of runes representing the supported operations
+// if the rune is found in the supported operations true is returned, otherwise false
+func isSupportedOperation(x rune, supportedOperations *[]rune) bool {
+	for _, n := range *supportedOperations {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }
