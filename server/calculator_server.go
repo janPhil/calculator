@@ -14,7 +14,7 @@ import (
 	"log"
 	"net"
 
-	calculator "github.com/janPhil/calculator/calculator"
+	"github.com/janPhil/calculator/calculator"
 	"google.golang.org/grpc"
 )
 
@@ -28,7 +28,7 @@ func main() {
 	calculator.RegisterCalculatorServiceServer(srv, calc)
 	l, err := net.Listen("tcp", ":8888")
 	if err != nil {
-		log.Fatalf("Could not listen to port 8888")
+		log.Fatalf("Could not listen to port 8888", err)
 	}
 	fmt.Println("Server started")
 	log.Fatal(srv.Serve(l))
@@ -47,11 +47,6 @@ func (c calculatorServiceServer) Calculate(ctx context.Context, term *calculator
 	right := term.GetRight()
 	operator := term.GetOperator()
 
-	if right == 0 && operator == "/" {
-		err := errors.New("division through zero not allowed")
-		return nil, err
-	}
-
 	fmt.Printf("Received request for %v %v %v\n", left, operator, right)
 
 	var response calculator.Result
@@ -64,6 +59,9 @@ func (c calculatorServiceServer) Calculate(ctx context.Context, term *calculator
 	case "*":
 		response.Result = left * right
 	case "/":
+		if right == 0 {
+			return nil, errors.New("division through zero not allowed")
+		}
 		response.Result = left / right
 	default:
 		return nil, errors.New("Unsupported operation")

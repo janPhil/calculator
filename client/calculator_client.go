@@ -21,11 +21,11 @@ func main() {
 	// The command-line Arguments are checked. If it is less then 2 that means that the user didnt provide a term for calculation.
 	// If it is more then two it might be that the user tried to use whitespaces which is not supported.
 	if len(os.Args) < 2 {
-		fmt.Println("Missing statement for calculation: <number><operation><number>")
+		log.Fatal("Missing statement for calculation: <number><operation><number>")
 		os.Exit(1)
 	}
 	if len(os.Args) > 2 {
-		fmt.Println("Please dont use any spaces: <number><operation><number>")
+		log.Fatal("Please dont use any spaces: <number><operation><number>")
 		os.Exit(1)
 	}
 
@@ -34,7 +34,7 @@ func main() {
 
 	conn, err := grpc.Dial(":8888", grpc.WithInsecure())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "no connection to server. %v\n", err)
+		log.Fatal("no connection to server.", err)
 	}
 
 	client := calculator.NewCalculatorServiceClient(conn)
