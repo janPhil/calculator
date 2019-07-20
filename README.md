@@ -19,7 +19,16 @@ To get information about system requirements, please visit the [Golang MinimumRe
 
 To install Golang, please follow the instructions on the [Golang Getting Started Page](https://golang.org/doc/install)
 
-This project supports Go modules. Therefor it is not necessary anymore to "go get" all dependencies.
+As the server implements a generated Protocol Buffer file, this file needs to be generated first.
+Therfor please download the protocol buffer compiler `protoc` with the gRPC go plugin:  
+
+```$ go get -u github.com/golang/protobuf/protoc-gen-go```
+
+After you installed the compiler you can generate the go-code file from the Protocol Buffer:  
+
+```$ protoc -I calculator/ calculator/calculator.proto --go_out=plugins=grpc:calculator```
+
+As this project supports Go modules, it is not necessary anymore to "go get" all dependencies.
 You can run the program either by running the two .go files for server and client:
 
 1. ```$ go run server/calculator_server.go``` (first time Go modules are allocated)
