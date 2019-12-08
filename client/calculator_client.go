@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -22,20 +23,22 @@ func main() {
 	// If it is more then two it might be that the user tried to use whitespaces which is not supported.
 	if len(os.Args) < 2 {
 		log.Fatal("Missing statement for calculation: <number><operation><number>")
-		os.Exit(1)
 	}
 	if len(os.Args) > 2 {
 		log.Fatal("Please dont use any spaces: <number><operation><number>")
-		os.Exit(1)
 	}
 
 	input := os.Args[1]
-	inputTerm := parseInput(input)
+	inputTerm, err := parseInput(input)
+	if err != nil {
+		log.Fatal("Input couldn't be parsed")
+	}
 
 	conn, err := grpc.Dial(":8888", grpc.WithInsecure())
 	if err != nil {
 		log.Fatal("no connection to server.", err)
 	}
+	defer conn.Close()
 
 	client := calculator.NewCalculatorServiceClient(conn)
 
@@ -50,7 +53,7 @@ func main() {
 // parseInput takes the provided input and tries to parse it into a term which can be used for a calculation.
 // The operator and both sides are put into a *calculator.Term.
 // If a conversion is not possible a message is logged, otherwise the term is returned.
-func parseInput(input string) *calculator.Term {
+func parseInput(input string) (*calculator.Term, error) {
 
 	var operator string
 	var indexOperator int
@@ -59,7 +62,7 @@ func parseInput(input string) *calculator.Term {
 	supportedOperations := []rune{'+', '-', '*', '/'}
 
 	for pos, char := range input {
-		if isSupportedOperation(char, &supportedOperations) {
+		if isSupportedOperation(char, supportedOperations) {
 			if pos == 0 {
 				continue
 			}
@@ -69,13 +72,13 @@ func parseInput(input string) *calculator.Term {
 		}
 	}
 	if operator == "" {
-		log.Fatal("Operation not supported")
+		return nil, errors.New("Unsupported operation")
 	}
 
 	parts[0] = input[:indexOperator]
 	left, errLeft := strconv.ParseFloat(parts[0], 32)
 	if errLeft != nil {
-		log.Fatal("cannot convert l: ", parts[0])
+		return nil, fmt.Errorf("cannot convert left side of expression: %s", parts[0])
 	}
 	parts[2] = input[indexOperator+1:]
 	parts[1] = operator
@@ -83,14 +86,20 @@ func parseInput(input string) *calculator.Term {
 	if errRight != nil {
 		log.Fatal("cannot convert r: ", parts[2])
 	}
-	return &calculator.Term{Left: float32(left), Right: float32(right), Operator: operator}
+
+	result := &calculator.Term{
+		Left:     float32(left),
+		Right:    float32(right),
+		Operator: operator}
+
+	return result, nil
 }
 
 // isSupportedOperations receives a rune and the reference to a slice of runes representing the supported operations
 // if the rune is found in the supported operations true is returned, otherwise false
-func isSupportedOperation(x rune, supportedOperations *[]rune) bool {
-	for _, n := range *supportedOperations {
-		if x == n {
+func isSupportedOperation(operator rune, supportedOperations []rune) bool {
+	for _, n := range supportedOperations {
+		if operator == n {
 			return true
 		}
 	}

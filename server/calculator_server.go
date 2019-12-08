@@ -22,16 +22,15 @@ import (
 func main() {
 
 	srv := grpc.NewServer()
+	server := &calculatorServiceServer{}
 
-	var calc calculatorServiceServer
-
-	calculator.RegisterCalculatorServiceServer(srv, calc)
-	l, err := net.Listen("tcp", ":8888")
+	calculator.RegisterCalculatorServiceServer(srv, server)
+	listen, err := net.Listen("tcp", ":8888")
 	if err != nil {
-		log.Fatalf("Could not listen to port 8888", err)
+		log.Fatal(err)
 	}
 	fmt.Println("Server started")
-	log.Fatal(srv.Serve(l))
+	log.Fatal(srv.Serve(listen))
 
 }
 
@@ -41,7 +40,7 @@ type calculatorServiceServer struct{}
 // It computes the result of the operation and sends back a *calculator.Result.
 // Should the operation be unsupported an error is thrown, also if there is an
 // attempt to do a division through zero
-func (c calculatorServiceServer) Calculate(ctx context.Context, term *calculator.Term) (*calculator.Result, error) {
+func (c *calculatorServiceServer) Calculate(ctx context.Context, term *calculator.Term) (*calculator.Result, error) {
 
 	left := term.GetLeft()
 	right := term.GetRight()
